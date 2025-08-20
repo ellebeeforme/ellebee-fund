@@ -2,11 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* tiny design system */
-:root { --ring: #F5B700; } /* gold accent */
-* { font-feature-settings: "ss01" on; }
-.card { @apply rounded-2xl bg-white/90 shadow-sm border border-rose-100; }
-.btn { @apply px-3 py-1.5 rounded-lg shadow-sm; }
-.btn-primary { @apply bg-rose-600 text-white hover:bg-rose-700; }
-.btn-ghost { @apply bg-rose-100 text-rose-800; }
+/* Theme */
+:root {
+  --ring: #F5B700; /* gold accent */
+  --bg1: #fff7fb;  /* very light rose */
+  --bg2: #ffeef6;
+  --ink: #7f1d1d;  /* rose-900 */
+}
+.dark {
+  --bg1: #0f0a0f;  /* aubergine */
+  --bg2: #1a121a;
+  --ink: #fde2e2;  /* soft light */
+}
+
+/* App background + typography */
+html, body { color: var(--ink); }
+body {
+  @apply min-h-screen;
+  background-image: linear-gradient(to bottom, var(--bg1), var(--bg2));
+}
+
+/* Tiny design system */
+.card { @apply rounded-2xl bg-white/90 shadow-sm border border-rose-100 dark:bg-rose-950/60 dark:border-rose-900; }
+.btn { @apply px-3 py-1.5 rounded-lg shadow-sm transition; }
+.btn-primary { @apply bg-rose-600 text-white hover:bg-rose-700 active:scale-[0.99]; }
+.btn-ghost { @apply bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-200 dark:hover:bg-rose-900/60; }
 .heading { @apply font-semibold; font-family: var(--font-poppins); }
+.input { @apply border rounded px-2 py-1 w-full bg-white/90 dark:bg-rose-900/30 border-rose-100 dark:border-rose-800; }
+
+/* Pretty scrollbar (WebKit) */
+*::-webkit-scrollbar { height: 10px; width: 10px; }
+*::-webkit-scrollbar-thumb { background: #f5b7; border-radius: 999px; }
