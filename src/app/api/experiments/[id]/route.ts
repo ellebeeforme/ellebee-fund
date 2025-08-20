@@ -9,13 +9,14 @@ function equityAndDD(pnl:number[]){
     eq += x
     equity.push(eq)
     peak = Math.max(peak, eq)
-    dd.push(eq - peak) // negative or 0
+    dd.push(eq - peak)
   }
   return { equity, dd }
 }
 
-export async function GET(_req:NextRequest, { params }:{ params:{ id:string } }){
-  const row = await prisma.experiment.findUnique({ where:{ id: params.id } })
+export async function GET(_req:NextRequest, ctx:{ params: Promise<{ id:string }> }){
+  const { id } = await ctx.params
+  const row = await prisma.experiment.findUnique({ where:{ id } })
   if(!row) return NextResponse.json({ ok:false, error:'not found' }, { status:404 })
   const raw:any = row.raw || {}
   const pnl:number[] = Array.isArray(raw.pnl) ? raw.pnl.map(Number) : []

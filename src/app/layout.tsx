@@ -10,9 +10,8 @@ export const metadata = { title:'Ellebee Fund', description:'Aesthetic quant con
 export default function RootLayout({ children }:{children:React.ReactNode}){
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-rose-100 text-rose-900">
-        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(40%_60%_at_80%_10%,rgba(255,215,0,0.10),transparent)]" />
-        <NavBar />
+      <body>
+        <NavBar/>
         {children}
       </body>
     </html>

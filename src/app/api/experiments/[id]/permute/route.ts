@@ -1,27 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
-export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
-
-function maxDrawdown(series: number[]): number {
-  let eq = 0, peak = 0, dd = 0
-  for (const x of series) { eq += x; peak = Math.max(peak, eq); dd = Math.min(dd, eq - peak) }
-  return Math.abs(dd)
-}
-
-function shuffle<T>(arr: T[]): T[] {
+function shuffle<T>(arr:T[]){
   const a = arr.slice()
-  for (let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1))
-    const t = a[i]; a[i]=a[j]; a[j]=t
-  }
+  for (let i=a.length-1;i>0;i--){ const j = (Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]] }
   return a
 }
+function maxDrawdown(pnl:number[]){
+  let eq=0, peak=0, maxDD=0
+  for(const x of pnl){ eq+=x; peak=Math.max(peak,eq); maxDD=Math.min(maxDD, eq-peak) }
+  return Math.abs(maxDD)
+}
 
-export async function POST(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(_req: NextRequest, ctx:{ params: Promise<{ id: string }> }){
   try {
-    const id = params.id
+    const { id } = await ctx.params
     const exp = await prisma.experiment.findUnique({ where: { id } })
     if (!exp) return NextResponse.json({ ok:false, error:'experiment not found' }, { status: 404 })
 

@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 
-export async function GET(req:NextRequest, { params }:{ params:{ id:string } }){
+export async function GET(req:NextRequest, ctx:{ params: Promise<{ id:string }> }){
+  const { id } = await ctx.params
   const { searchParams } = new URL(req.url)
   const type = (searchParams.get('type') || 'pnl').toLowerCase()
 
-  const row = await prisma.experiment.findUnique({ where:{ id: params.id } })
+  const row = await prisma.experiment.findUnique({ where:{ id } })
   if(!row) return new Response('not found', { status:404 })
 
   const raw:any = row.raw || {}
@@ -13,9 +14,7 @@ export async function GET(req:NextRequest, { params }:{ params:{ id:string } }){
   if(type === 'trades' && Array.isArray(raw.trades)){
     const keys = Array.from(new Set(raw.trades.flatMap((t:any)=>Object.keys(t))))
     csv += keys.join(',') + '\n'
-    for(const t of raw.trades){
-      csv += keys.map(k => JSON.stringify(t[k] ?? '')).join(',') + '\n'
-    }
+    for(const t of raw.trades){ csv += keys.map(k => JSON.stringify(t[k] ?? '')).join(',') + '\n' }
   }else{
     const pnl:number[] = Array.isArray(raw.pnl) ? raw.pnl.map(Number) : []
     csv = 'i,pnl\n' + pnl.map((x,i)=> `${i},${x}`).join('\n')
