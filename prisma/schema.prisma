@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Trade {
+  id           String    @id @default(uuid())
+  ts           DateTime  @default(now())
+  symbol       String
+  side         String
+  entry        Float?
+  exit         Float?
+  qty          Int       @default(1)
+  r_multiple   Float?
+  realized_pnl Float?
+  order_id     String?
+  fill_id      String?
+  strategy_tag String?
+  account      String?
+  raw          Json?
+  journals     Journal[] @relation("JournalTrade")
+
+  @@index([ts])
+}
+
+model Signal {
+  id           String   @id @default(uuid())
+  ts           DateTime @default(now())
+  symbol       String
+  side         String
+  reason       String?
+  timeframe    String?
+  entry        Float?
+  stop         Float?
+  target       Float?
+  confidence   Float?
+  strategy_tag String?
+  raw          Json?
+
+  @@index([ts])
+}
+
+model Experiment {
+  id           String   @id @default(uuid())
+  created_at   DateTime @default(now())
+  strategy_tag String?
+  params       Json?
+  metrics      Json?
+  source       String?
+  raw          Json?
+}
+
+model Journal {
+  id       String   @id @default(uuid())
+  ts       DateTime @default(now())
+  trade_id String?
+  trade    Trade?   @relation("JournalTrade", fields: [trade_id], references: [id])
+  text     String?
+  tags     String?
+
+  @@index([trade_id])
+  @@index([ts])
+}
+
+model Setting {
+  key        String   @id
+  value      Json?
+  updated_at DateTime @updatedAt
+}
+
+model Chat {
+  id      String   @id @default(uuid())
+  ts      DateTime @default(now())
+  channel String // 'coach' | 'strategist' | 'journal'
+  role    String // 'user' | 'ai' | 'system'
+  content String
+  meta    Json?
+
+  @@index([channel, ts])
+}
+
+model Bar {
+  id        String   @id @default(uuid())
+  symbol    String
+  timeframe String   // "1m" | "5m" | "15m" | "1h" | "1d"
+  ts        DateTime
+  o         Float
+  h         Float
+  l         Float
+  c         Float
+  v         Float?
+
+  @@unique([symbol, timeframe, ts])
+  @@index([symbol, timeframe, ts])
+}
+
+model Bar {
+  id        String   @id @default(uuid())
+  symbol    String
+  timeframe String   // "1m" | "5m" | "15m" | "1h" | "1d"
+  ts        DateTime
+  o         Float
+  h         Float
+  l         Float
+  c         Float
+  v         Float?
+
+  @@unique([symbol, timeframe, ts])
+  @@index([symbol, timeframe, ts])
+}
